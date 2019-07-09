@@ -7,8 +7,8 @@ readonly version=$2
 readonly formula_path="Formula/$formula.rb"
 
 if [ -z "$formula" ]; then
-  echo "./downgrade <formula_name> to list available versions"
-  echo "./downgrade <formula_name> <version> to install specified version"
+  echo "./brew-downgrade.sh <formula_name> to list available versions"
+  echo "./brew-downgrade.sh <formula_name> <version> to install specified version"
   exit 0
 fi
 
