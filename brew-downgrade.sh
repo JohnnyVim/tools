@@ -6,9 +6,9 @@ readonly formula=$1
 readonly version=$2
 readonly formula_path="Formula/$formula.rb"
 
-if [ -z "$formula" ]; then
-  echo "./brew-downgrade.sh <formula_name> to list available versions"
-  echo "./brew-downgrade.sh <formula_name> <version> to install specified version"
+if [ -z "$formula" ] || [ "$formula" = "--help" ] || [ "$formula" = "-h" ]; then
+  echo "./brew-downgrade.sh <formula_name>            list available versions"
+  echo "./brew-downgrade.sh <formula_name> <version>  install specified version"
   exit 0
 fi
 
@@ -43,6 +43,10 @@ for i in "${installed_version[@]}"; do
 done
 
 readonly commit=$(git log --pretty=oneline --abbrev-commit "$formula_path" | sed -n "/${version//./\.}/{p;q;}" | cut -d ' ' -f 1)
+if [ -z "$commit" ]; then
+  echo "Specified version ($version) is not available"
+  exit 1
+fi
 git checkout "$commit" "$formula_path"
 brew unlink "$formula"
 brew install "$formula"
