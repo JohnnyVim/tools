@@ -1,0 +1,73 @@
+pkgname=qemu-good
+pkgdesc="A generic and open source machine emulator and virtualizer - Patched for extra functionality"
+pkgver=4.0.0
+pkgrel=1
+arch=(x86_64)
+license=(GPL2 LGPL2.1)
+depends=(virglrenderer  sdl2  vte3  libpulse  seabios  gnutls  libpng  libaio  numactl  jemalloc  xfsprogs  libnfs  lzo  snappy  curl  vde2 libcap-ng  spice  libcacard  usbredir)
+makedepends=(spice-protocol python2 ceph libiscsi glusterfs)
+source=("http://wiki.qemu.org/download/qemu-${pkgver}.tar.xz"{,.sig}
+        cpu-pinning.patch::https://github.com/saveriomiroddi/qemu-pinning/commit/cf5294579e4b43e9bea7d681154dc1737e56e323.patch)
+sha256sums=('SKIP'
+            'SKIP'
+            'a6e9c046555aca07a234ab2ec75223bfb3fb156eab37331a418b7de66d25331e')
+validpgpkeys=('CEACC9E15534EBABB82D3FA03353C9CEF108B584')
+
+prepare() {
+  cd "qemu-$pkgver"
+  patch -p1 < ../cpu-pinning.patch
+}
+
+build() {
+  mkdir build
+  cd build
+
+  export ARFLAGS=rv
+  export CFLAGS+=" -fPIC"
+
+  ../qemu-$pkgver/configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --libexecdir=/usr/lib/qemu \
+    --python=/usr/bin/python2 \
+    --smbd=/usr/bin/smbd \
+    --enable-modules \
+    --enable-sdl \
+    --enable-jemalloc \
+    --disable-werror \
+    --audio-drv-list="pa alsa sdl" \
+    --target-list="x86_64-softmmu"
+
+  make
+}
+
+package() {
+  optdepends=('qemu-patched-arch-extra: extra architectures support'
+              'ovmf: Tianocore UEFI firmware for qemu'
+              'samba: SMB/CIFS server support'
+              'qemu-patched-block-iscsi: iSCSI block support'
+              'qemu-patched-block-rbd: RBD block support'
+              'qemu-patched-block-gluster: glusterfs block support')
+  provides=(qemu)
+  conflicts=(qemu)
+  replaces=(qemu-kvm)
+
+  make -C build DESTDIR="$pkgdir" install
+
+  cd "$pkgdir"
+  rm -r "var"
+
+  cd "usr/share/qemu"
+  rm bios-256k.bin
+  rm bios.bin
+  rm vgabios-bochs-display.bin
+  rm vgabios-cirrus.bin
+  rm vgabios-qxl.bin
+  rm vgabios-ramfb.bin
+  rm vgabios-stdvga.bin
+  rm vgabios-virtio.bin
+  rm vgabios-vmware.bin
+}
+
+# vim:set ts=2 sw=2 et:
