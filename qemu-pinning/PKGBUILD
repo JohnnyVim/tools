@@ -1,16 +1,16 @@
 pkgname=qemu-good
 pkgdesc="A generic and open source machine emulator and virtualizer - Patched for extra functionality"
-pkgver=4.1.0
+pkgver=5.0.0
 pkgrel=1
 arch=(x86_64)
 license=(GPL2 LGPL2.1)
 depends=(virglrenderer  sdl2  vte3  libpulse  seabios  gnutls  libpng  libaio  numactl  jemalloc  xfsprogs  libnfs  lzo  snappy  curl  vde2 libcap-ng  spice  libcacard  usbredir)
 makedepends=(spice-protocol python2 ceph libiscsi glusterfs)
 source=("http://wiki.qemu.org/download/qemu-${pkgver}.tar.xz"{,.sig}
-        cpu-pinning.patch::https://github.com/saveriomiroddi/qemu-pinning/commit/3c467032dca13f9a4b4a2316dbf904112dd2b364.patch)
+        cpu-pinning.patch::https://github.com/saveriomiroddi/qemu-pinning/commit/76241abfe8c5c71bc02a7e268ff3d3ca0734308c.patch)
 sha256sums=('SKIP'
             'SKIP'
-            '395ad97489bbe2d5832b1a0208b40933de9361bd30910eebf989336c934bd6b1')
+            'a978eb2b2ae4e1300fb20f6ab4806b2cb0c7eabf1e72a21e084d1e74f7f1b174')
 validpgpkeys=('CEACC9E15534EBABB82D3FA03353C9CEF108B584')
 
 prepare() {
